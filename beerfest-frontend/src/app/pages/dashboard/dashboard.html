@@ -1,0 +1,29 @@
+<app-navbar></app-navbar>
+
+<div class="grid">
+  <div class="card">
+    <h2>{{ auth.username }} — Your Counters</h2>
+
+    @for (it of items; track it.key) {
+      <div class="row">
+        <div>{{ it.label }}</div>
+        <div class="btns">
+          <button (click)="upd(it.key, -1)">–</button>
+          <button (click)="upd(it.key, 1)">+</button>
+        </div>
+      </div>
+    }
+
+    <div class="totals">
+      <div class="grand">{{ totals.grand }}</div>
+      <div class="muted">500: {{ totals.qty_500 }} | 250: {{ totals.qty_250 }} | Bottle: {{ totals.qty_bottle }}</div>
+    </div>
+  </div>
+
+  <!-- (rest unchanged) -->
+  <div class="card">
+    <h2>Team & Admin</h2>
+    <a routerLink="/overview">👀 See everyone’s totals</a>
+    <!-- ... -->
+  </div>
+</div>

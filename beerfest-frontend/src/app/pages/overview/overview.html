@@ -1,0 +1,30 @@
+<app-navbar></app-navbar>
+<div class="card">
+  <h2>All Sellers</h2>
+  <table class="table">
+    <thead>
+      <tr><th>Seller</th><th>500</th><th>250</th><th>Bottle</th><th>Total</th></tr>
+    </thead>
+    <tbody>
+    @for (r of rows; track r.username) {
+      <tr>
+        <td>{{ r.username }}</td>
+        <td class="right">{{ r.qty_500 }}</td>
+        <td class="right">{{ r.qty_250 }}</td>
+        <td class="right">{{ r.qty_bottle }}</td>
+        <td class="right"><b>{{ r.grand }}</b></td>
+      </tr>
+    }
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>Grand total</th>
+        <th class="right">{{ grand.qty_500 }}</th>
+        <th class="right">{{ grand.qty_250 }}</th>
+        <th class="right">{{ grand.qty_bottle }}</th>
+        <th class="right">{{ grand.grand }}</th>
+      </tr>
+    </tfoot>
+  </table>
+  <small class="muted">Auto-refreshing…</small>
+</div>

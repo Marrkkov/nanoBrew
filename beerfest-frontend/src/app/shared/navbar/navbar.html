@@ -1,0 +1,7 @@
+<nav class="nav">
+  <a routerLink="/" class="brand">🍻 Beer Fest</a>
+  <div class="grow"></div>
+  <a routerLink="/overview">Overview</a>
+  <span class="pill" *ngIf="auth.username">{{ auth.username }}</span>
+  <button *ngIf="auth.username" (click)="auth.logout()">Logout</button>
+</nav>

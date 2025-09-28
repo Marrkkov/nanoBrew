@@ -1,0 +1,10 @@
+<div class="card narrow">
+  <h2>Sign in</h2>
+  <form (ngSubmit)="submit()" #f="ngForm">
+    <label>Username <input name="u" [(ngModel)]="username" required></label>
+    <label>Password <input type="password" name="p" [(ngModel)]="password" required></label>
+    <button [disabled]="f.invalid || loading">Login</button>
+  </form>
+  <p class="err" *ngIf="error">{{ error }}</p>
+  <small>Tip: first run uses <code>admin/admin</code></small>
+</div>
