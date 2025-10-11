@@ -1,10 +1,28 @@
-<div class="card narrow">
-  <h2>Sign in</h2>
+<div class="card">
+  <h2>Ingresar</h2>
+
+  <label>Elegir cervecería
+    <select (change)="pick($any($event.target).value)">
+      <option value="" selected>— seleccionar —</option>
+      @for (b of breweries; track b) {
+        <option [value]="b">{{ b }}</option>
+      }
+    </select>
+  </label>
+
   <form (ngSubmit)="submit()" #f="ngForm">
-    <label>Username <input name="u" [(ngModel)]="username" required></label>
-    <label>Password <input type="password" name="p" [(ngModel)]="password" required></label>
-    <button [disabled]="f.invalid || loading">Login</button>
+    <label>Usuario
+      <input name="u" [(ngModel)]="username" required placeholder="usuario" autocomplete="username">
+    </label>
+
+    <label>Contraseña
+      <input type="password" name="p" [(ngModel)]="password" required placeholder="•••••" autocomplete="current-password">
+    </label>
+
+    <button class="btn btn--primary" [disabled]="f.invalid || loading">Entrar</button>
   </form>
-  <p class="err" *ngIf="error">{{ error }}</p>
-  <small>Tip: first run uses <code>admin/admin</code></small>
+
+  @if (error) {
+    <p class="err">{{ error }}</p>
+  }
 </div>

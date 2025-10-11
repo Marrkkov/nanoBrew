@@ -131,14 +131,21 @@ r.get("/sales/overview", (_req, res) => {
   const rows = db
     .prepare(
       `
-      SELECT u.username, s.qty_500, s.qty_250, s.qty_bottle,
-             (s.qty_500 + s.qty_250 + s.qty_bottle) AS grand
-      FROM users u
-      JOIN sales_totals s ON s.user_id = u.id
-      ORDER BY grand DESC, u.username ASC
-    `
+    SELECT u.username, s.qty_500, s.qty_250, s.qty_bottle,
+           (s.qty_500 + s.qty_250 + s.qty_bottle) AS grand
+    FROM users u
+    JOIN sales_totals s ON s.user_id = u.id
+    WHERE u.username <> 'admin'                 -- <— excluir admin
+    ORDER BY grand DESC, u.username ASC
+  `
     )
-    .all() as OverviewRow[];
+    .all() as {
+    username: string;
+    qty_500: number;
+    qty_250: number;
+    qty_bottle: number;
+    grand: number;
+  }[];
 
   const grand = rows.reduce(
     (acc, r) => {
@@ -153,5 +160,27 @@ r.get("/sales/overview", (_req, res) => {
 
   return res.json({ ok: true, rows, grand });
 });
+
+r.get("/auth/breweries", (_req, res) => {
+  const rows = db
+    .prepare(
+      "SELECT username FROM users WHERE lower(username) <> 'admin' ORDER BY username ASC"
+    )
+    .all() as { username: string }[];
+
+  return res.json({ ok: true, breweries: rows.map((r) => r.username) });
+});
+
+r.post(
+  "/admin/reset-totals",
+  requireAuth as any,
+  requireAdmin as any,
+  (_req, res) => {
+    db.prepare(
+      "UPDATE sales_totals SET qty_500=0, qty_250=0, qty_bottle=0, updated_at=datetime('now')"
+    ).run();
+    return res.json({ ok: true });
+  }
+);
 
 export default r;

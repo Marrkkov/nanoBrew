@@ -1,0 +1,55 @@
+@use '../../../styles/theme';
+
+:host { display: block; }
+
+.nav {
+  @extend .nav;
+}
+
+.nav-btn {
+  @include theme.btn-base;
+  font-weight: 600;
+  font-size: var(--fs-3);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--c-text);
+  border: 1px solid color-mix(in srgb, var(--c-border) 90%, var(--c-text) 10%);
+  box-shadow: none;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--c-primary) 10%, var(--c-surface));
+    border-color: color-mix(in srgb, var(--c-primary) 40%, var(--c-border));
+    box-shadow: var(--shadow-1);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.nav-btn--secondary {
+  color: var(--c-secondary);
+  border-color: color-mix(in srgb, var(--c-secondary) 35%, var(--c-border));
+
+  &:hover {
+    background: color-mix(in srgb, var(--c-secondary) 12%, var(--c-surface));
+    color: color-mix(in srgb, var(--c-secondary) 80%, var(--c-text));
+  }
+}
+
+.nav-btn--logout {
+  background: var(--c-danger);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--c-danger) 60%, #000 30%);
+
+  &:hover {
+    filter: brightness(0.96);
+    box-shadow: var(--shadow-2);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}

@@ -1,47 +1,34 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
 import { AuthService } from '../../auth.service';
+import { ApiService } from '../../api.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, NgIf],
-  template: `
-    <div class="card">
-      <h2>Sign in</h2>
-      <form (ngSubmit)="submit()" #f="ngForm">
-        <label
-          >Username <input name="u" [(ngModel)]="username" required
-        /></label>
-        <label
-          >Password
-          <input type="password" name="p" [(ngModel)]="password" required
-        /></label>
-        <button [disabled]="f.invalid || loading">Login</button>
-      </form>
-      <p class="err" *ngIf="error">{{ error }}</p>
-      <small>Tip: first run uses <code>admin/admin</code></small>
-    </div>
-  `,
-  styles: [
-    `
-      .card {
-        max-width: 420px;
-        margin: 40px auto;
-        display: grid;
-        gap: 10px;
-      }
-    `,
-  ],
+  imports: [FormsModule],
+  templateUrl: './login.html',
+  styleUrls: ['./login.scss'],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   username = '';
   password = '';
   loading = false;
   error = '';
+  breweries: string[] = [];
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService, private api: ApiService) {}
+
+  ngOnInit() {
+    this.api.breweries().subscribe({
+      next: (r) => (this.breweries = r.breweries),
+      error: () => (this.breweries = []),
+    });
+  }
+
+  pick(u: string) {
+    this.username = u;
+  }
 
   submit() {
     this.loading = true;

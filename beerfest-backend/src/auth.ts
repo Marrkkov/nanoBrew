@@ -28,7 +28,6 @@ export function requireAdmin(
   res: Response,
   next: NextFunction
 ) {
-  // super simple: user id 1 is admin
   if (req.user?.uid === 1) return next();
   return res.status(403).json({ ok: false, msg: "Only admin can do this" });
 }

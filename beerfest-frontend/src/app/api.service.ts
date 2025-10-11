@@ -47,4 +47,12 @@ export class ApiService {
       `${API}/sales/overview`
     );
   }
+  breweries() {
+    return this.http.get<{ ok: boolean; breweries: string[] }>(
+      `${API}/auth/breweries`
+    );
+  }
+  resetAllTotals() {
+    return this.http.post<{ ok: boolean }>(`${API}/admin/reset-totals`, {});
+  }
 }

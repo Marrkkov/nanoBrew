@@ -1,7 +1,38 @@
-.grid { display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); padding:16px; }
-.card { border:1px solid #ddd; border-radius:12px; padding:16px; }
-.row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; }
-.btns button { margin-left:6px; }
-.totals { margin-top:12px; }
-.grand { font-size:28px; font-weight:700; }
-.muted { color:#666; }
+@use '../../../styles/theme';
+
+:host { display: block; }
+
+.grid { @extend .grid; }
+.card { @extend .card; }
+.row  { @extend .row; }
+
+.totals { margin-top: var(--space-3); }
+.grand  { @extend .grand; }
+.muted  { @extend .muted; }
+
+.btns button { 
+  &:first-child { background: color-mix(in srgb, var(--c-danger) 12%, var(--c-surface)); }
+  &:last-child  { background: color-mix(in srgb, var(--c-success) 12%, var(--c-surface)); }
+}
+
+
+.card h3 {
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-2);
+}
+
+.card button {
+  margin-bottom: var(--space-3); 
+}
+
+details {
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}

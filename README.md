@@ -99,7 +99,7 @@ Los archivos **SCSS** del frontend se encuentran en:
 - En el **dashboard** aparece:
 
   ```
-  NOMBRE — Your Counters
+  NOMBRE — Tus Cuentas
   ```
 
   para identificar a qué cervecería corresponde.

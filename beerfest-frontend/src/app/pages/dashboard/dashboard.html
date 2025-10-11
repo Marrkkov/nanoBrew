@@ -1,17 +1,22 @@
 <app-navbar></app-navbar>
 
 <div class="grid">
+  <!-- Panel principal -->
   <div class="card">
-    <h2>{{ auth.username }} — Your Counters</h2>
+    <h2>{{ auth.username }} — Tus Cuentas</h2>
 
-    @for (it of items; track it.key) {
-      <div class="row">
-        <div>{{ it.label }}</div>
-        <div class="btns">
-          <button (click)="upd(it.key, -1)">–</button>
-          <button (click)="upd(it.key, 1)">+</button>
+    @if (!isAdmin) {
+      @for (it of items; track it.key) {
+        <div class="row">
+          <div>{{ it.label }}</div>
+          <div class="btns">
+            <button (click)="upd(it.key, -1)">–</button>
+            <button (click)="upd(it.key, 1)">+</button>
+          </div>
         </div>
-      </div>
+      }
+    } @else {
+      <p class="muted">Este usuario no registra ventas. Usa el panel de administración para gestionar el evento.</p>
     }
 
     <div class="totals">
@@ -20,10 +25,38 @@
     </div>
   </div>
 
-  <!-- (rest unchanged) -->
+  <!-- Panel secundario -->
   <div class="card">
     <h2>Team & Admin</h2>
-    <a routerLink="/overview">👀 See everyone’s totals</a>
-    <!-- ... -->
+    <a routerLink="/overview" class="link">👀 Ver totales de todos</a>
+
+    @if (isAdmin) {
+      <div class="space"></div>
+      <h3>Acciones de administrador</h3>
+      <button class="btn btn--danger" (click)="resetAll()">Restablecer todos los valores a 0</button>
+      <div class="muted">{{ resetMsg }}</div>
+
+      <div class="space"></div>
+      <details>
+        <summary>Agregar cervecería</summary>
+        <form (ngSubmit)="addUser()" #fu="ngForm">
+          <input name="nu" placeholder="nuevo usuario" [(ngModel)]="newU" required>
+          <input name="np" placeholder="clave temporal" [(ngModel)]="newP" required>
+          <button class="btn btn--primary">Agregar</button>
+        </form>
+        <small class="muted">{{ addMsg }}</small>
+      </details>
+    } @else {
+      <div class="space"></div>
+      <details>
+        <summary>Cambiar mi contraseña</summary>
+        <form (ngSubmit)="changePw()" #fp="ngForm">
+          <input name="c" type="password" placeholder="actual" [(ngModel)]="curPw" required>
+          <input name="n" type="password" placeholder="nueva (min 4)" [(ngModel)]="newPw" required>
+          <button class="btn">Cambiar</button>
+        </form>
+        <small class="muted">{{ pwMsg }}</small>
+      </details>
+    }
   </div>
 </div>

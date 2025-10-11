@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'styles/theme'; 
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-size: var(--fs-3);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 { font-family: var(--font-title); margin: 0 0 var(--space-3); }
+a { color: inherit; text-decoration: none; }
+a.link { color: color-mix(in srgb, var(--c-secondary) 40%, var(--c-text)); }

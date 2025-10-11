@@ -8,37 +8,20 @@ import { AuthService } from '../../auth.service';
   imports: [RouterLink],
   template: `
     <nav class="nav">
-      <a routerLink="/" class="brand">🍻 Beer Fest</a>
+      <a routerLink="/" class="brand">🍻OktobeerMut Beer Fest</a>
       <span class="grow"></span>
-      <a routerLink="/overview">Overview</a>
+
+      <a routerLink="/overview" class="nav-btn nav-btn--secondary">Overview</a>
 
       @if (auth.username) {
       <span class="pill">{{ auth.username }}</span>
-      <button (click)="auth.logout()">Logout</button>
+      <button class="nav-btn nav-btn--logout" (click)="auth.logout()">
+        Logout
+      </button>
       }
     </nav>
   `,
-  styles: [
-    `
-      .nav {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        padding: 10px;
-      }
-      .brand {
-        font-weight: 700;
-      }
-      .grow {
-        flex: 1;
-      }
-      .pill {
-        padding: 4px 8px;
-        border: 1px solid #ccc;
-        border-radius: 999px;
-      }
-    `,
-  ],
+  styleUrls: ['./navbar.scss'],
 })
 export class NavbarComponent {
   constructor(public auth: AuthService) {}
