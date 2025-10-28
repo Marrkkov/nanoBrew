@@ -22,9 +22,19 @@ export class DashboardComponent implements OnInit {
   items = [
     { key: '500' as const, label: '500 cc' },
     { key: '250' as const, label: '250 cc' },
-    { key: 'bottle' as const, label: 'Bottle' },
+    { key: 'bottle_1' as const, label: 'Botella (1/2 ficha)' },
+    { key: 'bottle_2' as const, label: 'Botella (1 ficha)' },
+    { key: 'extra' as const, label: 'Extra' },
   ];
-  totals = { qty_500: 0, qty_250: 0, qty_bottle: 0, grand: 0 };
+
+  totals = {
+    qty_500: 0,
+    qty_250: 0,
+    qty_bottle_1: 0,
+    qty_bottle_2: 0,
+    qty_extra: 0,
+    grand: 0,
+  };
 
   newU = '';
   newP = '';
@@ -41,7 +51,7 @@ export class DashboardComponent implements OnInit {
     this.api.myTotals().subscribe((res) => (this.totals = res.totals));
   }
 
-  upd(key: '500' | '250' | 'bottle', delta: -1 | 1) {
+  upd(key: '500' | '250' | 'bottle_1' | 'bottle_2' | 'extra', delta: -1 | 1) {
     if (this.isAdmin) return;
     this.api.update(key, delta).subscribe(() => this.refresh());
   }

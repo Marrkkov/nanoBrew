@@ -1,30 +1,41 @@
 <app-navbar></app-navbar>
 <div class="card">
-  <h2>All Sellers</h2>
+  <h2>All Brewers</h2>
   <table class="table">
     <thead>
-      <tr><th>Seller</th><th>500</th><th>250</th><th>Botella</th><th>Total</th></tr>
+      <tr>
+        <th>Brewer</th>
+        <th>500cc</th>
+        <th>250cc</th>
+        <th>Botella (1/2 ficha)</th>
+        <th>Botella (1 ficha)</th>
+        <th>Extra</th>
+        <th>Total</th>
+      </tr>
     </thead>
     <tbody>
-    @for (r of rows; track r.username) {
-      <tr>
-        <td>{{ r.username }}</td>
-        <td class="right">{{ r.qty_500 }}</td>
-        <td class="right">{{ r.qty_250 }}</td>
-        <td class="right">{{ r.qty_bottle }}</td>
-        <td class="right"><b>{{ r.grand }}</b></td>
-      </tr>
-    }
+      @for (r of rows; track r.username) {
+        <tr>
+          <td>{{ r.username }}</td>
+          <td class="right">{{ r.qty_500 }}</td>
+          <td class="right">{{ r.qty_250 }}</td>
+          <td class="right">{{ r.qty_bottle_1 }}</td>
+          <td class="right">{{ r.qty_bottle_2 }}</td>
+          <td class="right">{{ r.qty_extra }}</td>
+          <td class="right"><b>{{ r.grand }}</b></td>
+        </tr>
+      }
     </tbody>
     <tfoot>
       <tr>
-        <th>Grand total</th>
-        <th class="right">{{ grand.qty_500 }}</th>
-        <th class="right">{{ grand.qty_250 }}</th>
-        <th class="right">{{ grand.qty_bottle }}</th>
-        <th class="right">{{ grand.grand }}</th>
+        <td><b>Grand total</b></td>
+        <td class="right">{{ grand.qty_500 }}</td>
+        <td class="right">{{ grand.qty_250 }}</td>
+        <td class="right">{{ grand.qty_bottle_1 }}</td>
+        <td class="right">{{ grand.qty_bottle_2 }}</td>
+        <td class="right">{{ grand.qty_extra }}</td>
+        <td class="right"><b>{{ grand.grand }}</b></td>
       </tr>
     </tfoot>
   </table>
-  <small class="muted">Auto-refreshing…</small>
 </div>

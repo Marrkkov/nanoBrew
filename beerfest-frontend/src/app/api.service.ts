@@ -26,7 +26,10 @@ export class ApiService {
       { username, password }
     );
   }
-  update(item: '500' | '250' | 'bottle', delta: -1 | 1) {
+  update(
+    item: '500' | '250' | 'bottle_1' | 'bottle_2' | 'extra',
+    delta: -1 | 1
+  ) {
     return this.http.post<{ ok: boolean }>(`${API}/sales/update`, {
       item,
       delta,
@@ -38,7 +41,9 @@ export class ApiService {
       totals: {
         qty_500: number;
         qty_250: number;
-        qty_bottle: number;
+        qty_bottle_1: number;
+        qty_bottle_2: number;
+        qty_extra: number;
         grand: number;
       };
     }>(`${API}/sales/my-totals`);

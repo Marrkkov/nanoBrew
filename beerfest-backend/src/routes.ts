@@ -3,6 +3,7 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { requireAuth, requireAdmin, signToken } from "./auth";
 import { get, all, run } from "./db";
+import { ItemKey, TotalsRow, OverviewRow } from "./types";
 
 const r = Router();
 
@@ -10,13 +11,14 @@ const r = Router();
 type UserRow = { id: number; pw_hash: string };
 type PwHashRow = { pw_hash: string };
 type ValRow = { v: number };
-type TotalsRow = { qty_500: number; qty_250: number; qty_bottle: number };
-type OverviewRow = {
-  username: string;
-  qty_500: number;
-  qty_250: number;
-  qty_bottle: number;
-  grand: number;
+
+// --- Map item → column name ---
+export const ITEM_TO_COLUMN: Record<ItemKey, string> = {
+  "500": "qty_500",
+  "250": "qty_250",
+  bottle_1: "qty_bottle_1",
+  bottle_2: "qty_bottle_2",
+  extra: "qty_extra",
 };
 
 // --- Auth ---
@@ -49,12 +51,12 @@ r.post("/auth/change-password", requireAuth as any, async (req: any, res) => {
     "SELECT pw_hash FROM users WHERE id=? LIMIT 1",
     [req.user.uid]
   );
-
   if (!row || !(await bcrypt.compare(current, row.pw_hash))) {
     return res
       .status(400)
       .json({ ok: false, msg: "Current password is incorrect" });
   }
+
   if (String(next).length < 4) {
     return res.status(400).json({ ok: false, msg: "New password too short" });
   }
@@ -84,6 +86,7 @@ r.post(
         .status(400)
         .json({ ok: false, msg: "Username and password required" });
     }
+
     try {
       const uname = String(username).toLowerCase();
       const hash = await bcrypt.hash(password, 10);
@@ -96,6 +99,7 @@ r.post(
       await run("INSERT IGNORE INTO sales_totals(user_id) VALUES(?)", [
         info.insertId,
       ]);
+
       return res.json({ ok: true });
     } catch (e: any) {
       if (e?.code === "ER_DUP_ENTRY") {
@@ -111,11 +115,12 @@ r.post(
 // --- Sales update & totals ---
 r.post("/sales/update", requireAuth as any, async (req: any, res) => {
   const { item, delta } = req.body || {};
-  if (!["500", "250", "bottle"].includes(item) || ![1, -1].includes(delta)) {
+
+  if (!(item in ITEM_TO_COLUMN) || ![1, -1].includes(delta)) {
     return res.status(400).json({ ok: false, msg: "Bad request" });
   }
-  const col =
-    item === "500" ? "qty_500" : item === "250" ? "qty_250" : "qty_bottle";
+
+  const col = ITEM_TO_COLUMN[item as ItemKey];
 
   const cur = await get<ValRow>(
     `SELECT ${col} AS v FROM sales_totals WHERE user_id=? LIMIT 1`,
@@ -123,10 +128,9 @@ r.post("/sales/update", requireAuth as any, async (req: any, res) => {
   );
 
   const newV = Math.max(0, (cur?.v ?? 0) + delta);
+
   await run(
-    `UPDATE sales_totals
-     SET ${col}=?, updated_at=NOW()
-     WHERE user_id=?`,
+    `UPDATE sales_totals SET ${col}=?, updated_at=NOW() WHERE user_id=?`,
     [newV, req.user.uid]
   );
 
@@ -135,25 +139,49 @@ r.post("/sales/update", requireAuth as any, async (req: any, res) => {
 
 r.get("/sales/my-totals", requireAuth as any, async (req: any, res) => {
   const t = await get<TotalsRow>(
-    "SELECT qty_500, qty_250, qty_bottle FROM sales_totals WHERE user_id=? LIMIT 1",
+    "SELECT qty_500, qty_250, qty_bottle_1, qty_bottle_2, qty_extra FROM sales_totals WHERE user_id=? LIMIT 1",
     [req.user.uid]
   );
 
-  const totals = t ?? { qty_500: 0, qty_250: 0, qty_bottle: 0 };
-  const grand = totals.qty_500 + totals.qty_250 + totals.qty_bottle;
+  const totals: TotalsRow = t ?? {
+    qty_500: 0,
+    qty_250: 0,
+    qty_bottle_1: 0,
+    qty_bottle_2: 0,
+    qty_extra: 0,
+  };
+
+  const grand =
+    totals.qty_500 +
+    totals.qty_250 +
+    totals.qty_bottle_1 +
+    totals.qty_bottle_2 +
+    totals.qty_extra;
+
   return res.json({ ok: true, totals: { ...totals, grand } });
 });
 
-// Public overview (or protect if you prefer)
+// --- Public overview ---
 r.get("/sales/overview", async (_req, res) => {
   const rows = await all<OverviewRow>(
     `
-    SELECT u.username,
-           s.qty_500, s.qty_250, s.qty_bottle,
-           (s.qty_500 + s.qty_250 + s.qty_bottle) AS grand
+    SELECT
+      u.username,
+      COALESCE(s.qty_500, 0) AS qty_500,
+      COALESCE(s.qty_250, 0) AS qty_250,
+      COALESCE(s.qty_bottle_1, 0) AS qty_bottle_1,
+      COALESCE(s.qty_bottle_2, 0) AS qty_bottle_2,
+      COALESCE(s.qty_extra, 0) AS qty_extra,
+      (
+        COALESCE(s.qty_500, 0) +
+        COALESCE(s.qty_250, 0) +
+        COALESCE(s.qty_bottle_1, 0) +
+        COALESCE(s.qty_bottle_2, 0) +
+        COALESCE(s.qty_extra, 0)
+      ) AS grand
     FROM users u
     JOIN sales_totals s ON s.user_id = u.id
-    WHERE u.username <> 'admin'
+    WHERE LOWER(u.username) <> 'admin'
     ORDER BY grand DESC, u.username ASC
     `
   );
@@ -162,23 +190,42 @@ r.get("/sales/overview", async (_req, res) => {
     (acc, r) => {
       acc.qty_500 += r.qty_500;
       acc.qty_250 += r.qty_250;
-      acc.qty_bottle += r.qty_bottle;
+      acc.qty_bottle_1 += r.qty_bottle_1;
+      acc.qty_bottle_2 += r.qty_bottle_2;
+      acc.qty_extra += r.qty_extra;
       acc.grand += r.grand;
       return acc;
     },
-    { qty_500: 0, qty_250: 0, qty_bottle: 0, grand: 0 }
+    {
+      qty_500: 0,
+      qty_250: 0,
+      qty_bottle_1: 0,
+      qty_bottle_2: 0,
+      qty_extra: 0,
+      grand: 0,
+    }
   );
 
   return res.json({ ok: true, rows, grand });
 });
 
+// --- Admin: reset all totals ---
 r.post(
   "/admin/reset-totals",
   requireAuth as any,
   requireAdmin as any,
   async (_req, res) => {
     await run(
-      "UPDATE sales_totals SET qty_500=0, qty_250=0, qty_bottle=0, updated_at=NOW()",
+      `
+      UPDATE sales_totals
+      SET
+        qty_500=0,
+        qty_250=0,
+        qty_bottle_1=0,
+        qty_bottle_2=0,
+        qty_extra=0,
+        updated_at=NOW()
+      `,
       []
     );
     return res.json({ ok: true });

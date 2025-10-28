@@ -7,7 +7,7 @@ const {
   DB_PORT = "3306",
   DB_NAME = "wehaveto_beermut",
   DB_USER = "root",
-  DB_PASS = "",
+  DB_PASS = "necron123",
 } = process.env;
 
 // --- Connection pool ---
@@ -52,7 +52,9 @@ CREATE TABLE IF NOT EXISTS sales_totals (
   user_id INT NOT NULL,
   qty_500 INT NOT NULL DEFAULT 0,
   qty_250 INT NOT NULL DEFAULT 0,
-  qty_bottle INT NOT NULL DEFAULT 0,
+  qty_bottle_1 INT NOT NULL DEFAULT 0,
+  qty_bottle_2 INT NOT NULL DEFAULT 0,
+  qty_extra INT NOT NULL DEFAULT 0,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id),
   CONSTRAINT fk_sales_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -61,10 +63,10 @@ CREATE TABLE IF NOT EXISTS sales_totals (
 
 const BREWERIES: string[] = [
   "Sin Rodeo",
-  "Slurry brew",
+  "Slurry Brew",
   "Cupercito's Company",
   "El Faro",
-  "Codigo brew",
+  "Codigo Brewing",
   "Trabalenguas",
   "San Gregorio",
   "Proton",
@@ -121,7 +123,7 @@ export async function initDb() {
 
     // Ensure sales_totals row
     await run(
-      "INSERT IGNORE INTO sales_totals (user_id, qty_500, qty_250, qty_bottle) VALUES (?, 0, 0, 0)",
+      "INSERT IGNORE INTO sales_totals (user_id, qty_500, qty_250, qty_bottle_1, qty_bottle_2, qty_extra) VALUES (?, 0, 0, 0, 0, 0)",
       [row.id]
     );
   }

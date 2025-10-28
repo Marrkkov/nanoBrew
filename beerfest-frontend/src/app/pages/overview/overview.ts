@@ -10,7 +10,14 @@ import { NavbarComponent } from '../../shared/navbar/navbar';
 })
 export class OverviewComponent implements OnInit, OnDestroy {
   rows: any[] = [];
-  grand = { qty_500: 0, qty_250: 0, qty_bottle: 0, grand: 0 };
+  grand = {
+    qty_500: 0,
+    qty_250: 0,
+    qty_bottle_1: 0,
+    qty_bottle_2: 0,
+    qty_extra: 0,
+    grand: 0,
+  };
   timer?: any;
 
   constructor(private api: ApiService) {}
