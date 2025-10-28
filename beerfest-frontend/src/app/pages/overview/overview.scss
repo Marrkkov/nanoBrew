@@ -1,6 +1,12 @@
 @use '../../../styles/theme';
 
-:host { display: block; padding: var(--space-4); }
+:host {
+  display: block;
+  padding: var(--space-4);
+}
+@media (max-width: 680px) {
+  :host { padding: var(--space-3); }
+}
 .card { @extend .card; }
 .table { @extend .table; }
 .right { text-align: right; }

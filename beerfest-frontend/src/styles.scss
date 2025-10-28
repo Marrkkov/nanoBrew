@@ -1,4 +1,4 @@
-@use 'styles/theme'; 
+@use 'styles/theme';
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
@@ -19,15 +19,15 @@ a.link { color: color-mix(in srgb, var(--c-secondary) 40%, var(--c-text)); }
 
 .table {
   width: 100%;
-  border-collapse: collapse;  
-  table-layout: fixed;        
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .table :is(th, td) {
   padding: var(--space-2) var(--space-3);
   vertical-align: middle;
   border-bottom: 1px solid var(--c-border, color-mix(in srgb, var(--c-text) 12%, transparent));
-  white-space: nowrap;    
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -53,11 +53,14 @@ a.link { color: color-mix(in srgb, var(--c-secondary) 40%, var(--c-text)); }
 .table-wrapper {
   overflow: auto;
   max-height: 70vh;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
+
 .table-wrapper thead th {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 5;
 }
 
 .card {
@@ -66,4 +69,40 @@ a.link { color: color-mix(in srgb, var(--c-secondary) 40%, var(--c-text)); }
   border: 1px solid var(--c-border, color-mix(in srgb, var(--c-text) 10%, transparent));
   border-radius: 12px;
   padding: var(--space-4);
+}
+
+/* Sticky first column (body and header) + readable text */
+.table :is(th:first-child, td:first-child) {
+  position: sticky;
+  left: 0;
+  background: var(--c-surface-0, var(--c-bg));
+  z-index: 6;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.table thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 7;
+}
+
+/* Column sizing for readability */
+.table thead th,
+.table tbody td { min-width: 80px; }
+.table :is(th:first-child, td:first-child) { min-width: 180px; }
+
+/* Mobile tweaks */
+@media (max-width: 680px) {
+  :root { --fs-3: clamp(13px, 3.4vw, 15px); }
+  .card { padding: var(--space-3); }
+  .table { font-size: 0.95em; }
+  .table :is(th, td) { padding: 6px 8px; }
+  .table thead th { white-space: normal; text-align: center; }
+  .table :is(th:first-child, td:first-child) { min-width: 200px; }
+  .nav { flex-wrap: wrap; gap: 8px; }
+  .nav > * { flex: 0 0 auto; }
+  .nav-btn { font-size: 0.92em; padding: 6px 10px; border-radius: 999px; }
+  .nav .brand, .nav .title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
